@@ -63,7 +63,6 @@ export const createNewSubCategory = ErrorHandler(async (req, res, next) => {
 
         };
 
-        console.log(req.body, "asds");
 
         const newSubCategory = subCategoryModel(req.body);
         await newSubCategory.save();
