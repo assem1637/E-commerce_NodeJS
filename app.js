@@ -15,6 +15,7 @@ import dbConnection from './src/DB/dbConnection.js';
 import morgan from 'morgan';
 import apiError from './src/Utils/apiError.js';
 import categoryRouter from './src/Components/Category/category.route.js';
+import subCategoryRouter from './src/Components/subCategory/subCategory.route.js';
 
 
 
@@ -37,6 +38,7 @@ if (process.env.MODE_NOW === "Development") {
 
 
 app.use("/api/v1/category", categoryRouter);
+app.use("/api/v1/subcategory", subCategoryRouter);
 
 
 
