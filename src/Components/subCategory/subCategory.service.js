@@ -49,11 +49,11 @@ export const getAllSubCategories = ErrorHandler(async (req, res, next) => {
 
 export const createNewSubCategory = ErrorHandler(async (req, res, next) => {
 
-    const subCategory = await subCategoryModel.findOne({ name: req.body.name });
+    const subCategory = await subCategoryModel.findOne({ name: (req.body.name).toLowerCase() });
 
     if (subCategory) {
 
-        res.status(400).json({ message: `The Category: ${subCategory.name} Is Already Here` });
+        res.status(400).json({ message: `The subCategory: ${subCategory.name} Is Already Here` });
 
     } else {
 
@@ -121,7 +121,7 @@ export const updateSpecificSubCategory = ErrorHandler(async (req, res, next) => 
         };
 
 
-        subCategory = await subCategoryModel.findOneAndUpdate({ _id: req.params.id }, req.body);
+        subCategory = await subCategoryModel.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
 
         res.status(200).json({ message: "Success Updated", data: subCategory });
 

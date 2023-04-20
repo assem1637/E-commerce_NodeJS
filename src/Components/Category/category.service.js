@@ -58,22 +58,7 @@ export const getAllCategories = ErrorHandler(async (req, res, next) => {
 
 export const createNewCategory = ErrorHandler(async (req, res, next) => {
 
-    if (req.body.name) {
-
-        req.body.slug = slugify(req.body.name);
-
-    };
-
-
-    if (req.file) {
-
-        const cloud = await cloudinary.uploader.upload(req.file.path);
-        req.body.image = cloud.secure_url;
-
-    };
-
-
-    const category = await categoryModel.findOne({ name: (req.body.name).toString() });
+    const category = await categoryModel.findOne({ name: (req.body.name).toLowerCase() });
 
 
     if (category) {
@@ -81,6 +66,23 @@ export const createNewCategory = ErrorHandler(async (req, res, next) => {
         res.status(400).json({ message: `The Category: ${category.name} Is Already Here` });
 
     } else {
+
+
+        if (req.body.name) {
+
+            req.body.slug = slugify(req.body.name);
+
+        };
+
+
+        if (req.file) {
+
+            const cloud = await cloudinary.uploader.upload(req.file.path);
+            req.body.image = cloud.secure_url;
+
+        };
+
+
 
         const newCategory = categoryModel(req.body);
         await newCategory.save();
@@ -145,7 +147,7 @@ export const updateSpecificCategory = ErrorHandler(async (req, res, next) => {
         };
 
 
-        category = await categoryModel.findOneAndUpdate({ _id: req.params.id }, req.body);
+        category = await categoryModel.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
 
         res.status(200).json({ message: "Success Updated", data: category });
 
