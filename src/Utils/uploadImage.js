@@ -45,3 +45,14 @@ export const uploadSingleImage = (name) => {
     return coreUpload().single(name);
 
 };
+
+
+
+
+// Upload Fields Image
+
+export const uploadFieldsImage = (fields) => {
+
+    return coreUpload().fields(fields);
+
+};
