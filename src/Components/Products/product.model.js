@@ -69,7 +69,7 @@ const productSchema = mongoose.Schema({
 
 
 
-    image: [String],
+    images: [String],
 
     colors: [String],
 
@@ -85,7 +85,7 @@ const productSchema = mongoose.Schema({
     subCategory: {
 
         type: mongoose.SchemaTypes.ObjectId,
-        ref: "subcategory",
+        ref: "subCategory",
         required: [true, "subCategory Of Product Is Required"],
 
     },

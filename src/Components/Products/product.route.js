@@ -3,7 +3,7 @@ import { getAllProducts, createNewProduct, getSpecificProduct, updateSpecificPro
 import { uploadFieldsImage } from '../../Utils/uploadImage.js';
 
 
-const fields = [{ name: 'imageCover', maxCount: 1 }, { name: 'image', maxCount: 6 }];
+const fields = [{ name: 'imageCover', maxCount: 1 }, { name: 'images', maxCount: 6 }];
 
 
 const router = Router();
