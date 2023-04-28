@@ -17,7 +17,6 @@ import apiError from './src/Utils/apiError.js';
 import categoryRouter from './src/Components/Category/category.route.js';
 import subCategoryRouter from './src/Components/subCategory/subCategory.route.js';
 import brandRouter from './src/Components/Brand/brand.route.js';
-import productRouter from './src/Components/Products/product.route.js';
 
 
 
@@ -43,7 +42,6 @@ if (process.env.MODE_NOW === "Development") {
 app.use("/api/v1/category", categoryRouter);
 app.use("/api/v1/subcategory", subCategoryRouter);
 app.use("/api/v1/brand", brandRouter);
-app.use("/api/v1/products", productRouter);
 
 
 
