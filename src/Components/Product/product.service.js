@@ -2,6 +2,7 @@ import productModel from './product.model.js';
 import apiError from '../../Utils/apiError.js';
 import cloudinary from "cloudinary";
 import slugify from "slugify";
+import ApiFeatures from '../../Utils/apiFeatures.js';
 
 
 
@@ -46,8 +47,17 @@ const ErrorHandler = (fun) => {
 
 export const getAllProducts = ErrorHandler(async (req, res, next) => {
 
-    const allProducts = await productModel.find({}).populate("category subCategory brand");
-    res.status(200).json({ message: "Success", data: allProducts });
+    const mongooseQuery = productModel.find({}).populate("category subCategory brand");
+
+    const apiFeatures = new ApiFeatures(mongooseQuery, req.query).Pagination().Filter().Search().Select().Sort();
+
+
+
+    // Excute MongooseQuery
+
+    const Final_Data_Of_Products = await apiFeatures.mongooseQuery;
+
+    res.status(200).json({ message: "Success", result: Final_Data_Of_Products.length, page: apiFeatures.page, data: Final_Data_Of_Products });
 
 });
 
