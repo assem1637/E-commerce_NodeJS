@@ -91,6 +91,8 @@ export const createNewUser = ErrorHandler(async (req, res, next) => {
 
             const newUser = userModel(req.body);
             await newUser.save();
+            const token = jwt.sign({ email: req.body.email }, process.env.SECRET_KEY_SIGNUP);
+            sendMessageToConfirmEmail(req.body.email, token, req.protocol, req.headers.host);
 
 
             res.status(200).json({ message: "Success", data: newUser });

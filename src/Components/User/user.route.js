@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getAllUsers, createNewUser, getSpecificUser, updateSpecificUser, deleteSpecificUser } from './user.service.js';
-// import { signup, signin, confirmEmail, forgetPassword, confirmResetCode, changePasswordAfterSuccessConfirmResetCode } from './user.auth.js';
+import { signup, signin, confirmEmail, forgetPassword, confirmResetCode, changePasswordAfterSuccessConfirmResetCode } from './user.auth.js';
 import { uploadSingleImage } from '../../Utils/uploadImage.js';
 
 
@@ -24,9 +24,9 @@ router.route("/:id")
 
 
 
-// router.post("/signup", signup);
-// router.post("/signin", signin);
-// router.patch("/confirmEmail", confirmEmail);
+router.post("/signup", signup);
+router.post("/signin", signin);
+router.patch("/confirmEmail/:token", confirmEmail);
 
 
 

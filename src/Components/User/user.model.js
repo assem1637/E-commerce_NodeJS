@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 
 
 
+
 const ValidateThePhone = (phone) => {
 
     return phone.match(/^01(0|1|2|5)[0-9]{8}$/) ? true : false;
@@ -104,7 +105,6 @@ const userSchema = mongoose.Schema({
     profileImage: {
 
         type: String,
-        required: [true, "Profile Image Of Account Is Required"],
 
     },
 
