@@ -160,6 +160,9 @@ export const updateSpecificUser = ErrorHandler(async (req, res, next) => {
             req.body.password = hash;
             req.body.rePassword = hash;
 
+
+            req.body.changePasswordAt = Date.now();
+
         };
 
 
