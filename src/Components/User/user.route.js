@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getAllUsers, createNewUser, getSpecificUser, updateSpecificUser, deleteSpecificUser } from './user.service.js';
-import { signup, signin, confirmEmail } from './user.auth.js';
+import { signup, signin, confirmEmail, forgetPassword, confirmResetCode, Change_Password_After_Success_Confirm_Reset_Code } from './user.auth.js';
 import { uploadSingleImage } from '../../Utils/uploadImage.js';
 
 
@@ -30,9 +30,9 @@ router.patch("/confirmEmail/:token", confirmEmail);
 
 
 
-// router.post("/forgetPassword", forgetPassword);
-// router.post("/confirmResetCode", confirmResetCode);
-// router.put("/changePasswordAfterSuccessConfirmResetCode", changePasswordAfterSuccessConfirmResetCode);
+router.post("/forgetPassword", forgetPassword);
+router.post("/confirmResetCode/:token", confirmResetCode);
+router.put("/changePasswordAfterSuccessConfirmResetCode/:token", Change_Password_After_Success_Confirm_Reset_Code);
 
 
 

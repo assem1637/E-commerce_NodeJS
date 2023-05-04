@@ -109,6 +109,21 @@ const userSchema = mongoose.Schema({
     },
 
 
+
+    resetCode: {
+
+        type: String,
+
+    },
+
+
+    changePasswordAt: {
+
+        type: Date,
+
+    },
+
+
 }, { timestamps: true });
 
 

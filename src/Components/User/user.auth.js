@@ -4,6 +4,7 @@ import cloudinary from "cloudinary";
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import sendMessageToConfirmEmail from '../../Utils/sendConfirmEmail.js';
+import sendResetCode from '../../Utils/sendResetCode.js';
 
 
 
@@ -37,7 +38,6 @@ const ErrorHandler = (fun) => {
     };
 
 };
-
 
 
 
@@ -182,6 +182,139 @@ export const confirmEmail = ErrorHandler(async (req, res, next) => {
             } else {
 
                 res.status(400).json({ message: `This Is Email: ${decoded.email} Is Doesn't Exists` });
+
+            };
+
+        };
+
+    });
+
+});
+
+
+
+
+
+
+
+
+// Forget Password and Send Reset Code To Email
+
+export const forgetPassword = ErrorHandler(async (req, res, next) => {
+
+    const user = await userModel.findOne({ email: req.body.email });
+
+    if (user) {
+
+        const ResetCode = parseInt(Math.random() * 1000000).toString();
+        const hashResetCode = bcrypt.hashSync(ResetCode, 5);
+
+        user.resetCode = hashResetCode;
+
+        await user.save();
+        sendResetCode(user.email, ResetCode);
+        const token = jwt.sign({ email: user.email }, process.env.SECRET_KEY_RESET_PASSWORD);
+
+        res.status(200).json({ message: "Success Send Reset Code, Check Your Email", token });
+
+    } else {
+
+        res.status(400).json({ message: "Not Found User, Please try again with other information." });
+
+    };
+
+});
+
+
+
+
+
+
+
+// Confirm Reset Code 
+
+export const confirmResetCode = ErrorHandler(async (req, res, next) => {
+
+    const token = req.params.token;
+
+    jwt.verify(token, process.env.SECRET_KEY_RESET_PASSWORD, async function (err, decoded) {
+
+        if (err) {
+
+            res.status(400).json({ message: "Invalid Token", err });
+
+        } else {
+
+            const user = await userModel.findOne({ email: decoded.email });
+
+            if (user) {
+
+                const match = await bcrypt.compare(req.body.resetCode, user.resetCode);
+
+                if (match) {
+
+                    const token = jwt.sign({ email: user.email }, process.env.SECRET_KEY_RESET_PASSWORD);
+                    res.status(200).json({ message: "Success Confirm Reset Code", token });
+
+                } else {
+
+                    return next(new apiError(`The Number That You've Entered Doesn't Match Your Code. Please Try Again.`, 400));
+
+                };
+
+
+            } else {
+
+                res.status(400).json({ message: "Not Found User" });
+
+            };
+
+        };
+
+    });
+
+});
+
+
+
+
+
+
+
+
+// Change_Password_After_Success_Confirm_Reset_Code
+
+export const Change_Password_After_Success_Confirm_Reset_Code = ErrorHandler(async (req, res, next) => {
+
+    const token = req.params.token;
+
+    jwt.verify(token, process.env.SECRET_KEY_RESET_PASSWORD, async function (err, decoded) {
+
+        if (err) {
+
+            res.status(400).json({ message: "Invalid Token", err });
+
+        } else {
+
+            const user = await userModel.findOne({ email: decoded.email });
+
+            if (user) {
+
+                const hash = bcrypt.hashSync(req.body.newPassword, 5);
+
+                user.password = hash;
+                user.rePassword = hash;
+                user.changePasswordAt = Date.now();
+
+                user.resetCode = null;
+
+                await user.save();
+
+                res.status(200).json({ message: "Success Change Password, Try Login Now" });
+
+            } else {
+
+                res.status(400).json({ message: "Not Found User" });
 
             };
 
