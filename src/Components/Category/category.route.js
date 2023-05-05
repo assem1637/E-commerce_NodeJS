@@ -1,6 +1,9 @@
 import { Router } from 'express';
 import { getAllCategories, createNewCategory, getSpecificCategory, updateSpecificCategory, deleteSpecificCategory } from "./category.service.js";
 import { uploadSingleImage } from "../../Utils/uploadImage.js";
+import { Authentication, Authorization } from '../User/user.auth.js';
+
+
 
 
 
@@ -10,14 +13,14 @@ const router = Router();
 
 router.route("/")
     .get(getAllCategories)
-    .post(uploadSingleImage("image"), createNewCategory);
+    .post(Authentication, Authorization(["admin"]), uploadSingleImage("image"), createNewCategory);
 
 
 
 router.route("/:id")
     .get(getSpecificCategory)
-    .put(uploadSingleImage("image"), updateSpecificCategory)
-    .delete(deleteSpecificCategory);
+    .put(Authentication, Authorization(["admin"]), uploadSingleImage("image"), updateSpecificCategory)
+    .delete(Authentication, Authorization(["admin"]), deleteSpecificCategory);
 
 
 

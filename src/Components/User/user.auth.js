@@ -323,3 +323,93 @@ export const Change_Password_After_Success_Confirm_Reset_Code = ErrorHandler(asy
     });
 
 });
+
+
+
+
+
+
+
+// Authentication 
+
+export const Authentication = ErrorHandler(async (req, res, next) => {
+
+    const token = req.headers["token"];
+
+    jwt.verify(token, process.env.SECRET_KEY_SIGNIN, async function (err, decoded) {
+
+        if (err) {
+
+            res.status(400).json({ message: "Invalid Token", err });
+
+        } else {
+
+            const user = await userModel.findOne({ email: decoded.email });
+
+
+            if (user) {
+
+
+                if (Date.now() > user.changePasswordAt) {
+
+                    req.user = user;
+                    next();
+
+                } else {
+
+                    const passwordChangedAt = new Date(user.changePasswordAt);
+                    res.status(400).json({ message: `Your Password Changed At: ${passwordChangedAt}` });
+
+                };
+
+
+            } else {
+
+                res.status(400).json({ message: "Not Found User" });
+
+            };
+
+        };
+
+    });
+
+});
+
+
+
+
+
+
+
+
+
+// Authorization 
+
+export const Authorization = (roles) => {
+
+    return ErrorHandler(async (req, res, next) => {
+
+        const user = await userModel.findOne({ email: req.user.email });
+
+        if (user) {
+
+            if (roles.includes(user.role)) {
+
+                req.user = user;
+                next();
+
+            } else {
+
+                res.status(400).json({ message: "You Not Authorized To Do That" });
+
+            };
+
+        } else {
+
+            res.status(400).json({ message: "Not Found User" });
+
+        };
+
+    });
+
+};

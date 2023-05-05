@@ -1,6 +1,12 @@
 import { Router } from 'express';
 import { getAllUsers, createNewUser, getSpecificUser, updateSpecificUser, deleteSpecificUser } from './user.service.js';
-import { signup, signin, confirmEmail, forgetPassword, confirmResetCode, Change_Password_After_Success_Confirm_Reset_Code } from './user.auth.js';
+import {
+
+    signup, signin, confirmEmail,
+    forgetPassword, confirmResetCode, Change_Password_After_Success_Confirm_Reset_Code,
+    Authentication, Authorization
+
+} from './user.auth.js';
 import { uploadSingleImage } from '../../Utils/uploadImage.js';
 
 
@@ -12,14 +18,14 @@ const router = Router();
 
 
 router.route("/")
-    .get(getAllUsers)
-    .post(uploadSingleImage("profileImage"), createNewUser);
+    .get(Authentication, Authorization(["admin"]), getAllUsers)
+    .post(Authentication, Authorization(["admin"]), uploadSingleImage("profileImage"), createNewUser);
 
 
 router.route("/:id")
-    .get(getSpecificUser)
-    .put(uploadSingleImage("profileImage"), updateSpecificUser)
-    .delete(deleteSpecificUser);
+    .get(Authentication, Authorization(["admin"]), getSpecificUser)
+    .put(Authentication, Authorization(["admin", "user"]), uploadSingleImage("profileImage"), updateSpecificUser)
+    .delete(Authentication, Authorization(["admin"]), deleteSpecificUser);
 
 
 

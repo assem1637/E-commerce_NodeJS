@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { getAllProducts, createNewProduct, getSpecificProduct, updateSpecificProduct, deleteSpecificProduct } from './product.service.js';
 import { uploadFieldsImage } from "../../Utils/uploadImage.js";
+import { Authentication, Authorization } from '../User/user.auth.js';
+
+
 
 
 
@@ -14,15 +17,15 @@ const router = Router();
 
 router.route("/")
     .get(getAllProducts)
-    .post(uploadFieldsImage(Fields), createNewProduct);
+    .post(Authentication, Authorization(["admin"]), uploadFieldsImage(Fields), createNewProduct);
 
 
 
 
 router.route("/:id")
     .get(getSpecificProduct)
-    .put(uploadFieldsImage(Fields), updateSpecificProduct)
-    .delete(deleteSpecificProduct);
+    .put(Authentication, Authorization(["admin"]), uploadFieldsImage(Fields), updateSpecificProduct)
+    .delete(Authentication, Authorization(["admin"]), deleteSpecificProduct);
 
 
 

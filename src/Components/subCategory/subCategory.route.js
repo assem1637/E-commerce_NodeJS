@@ -1,5 +1,8 @@
 import { Router } from 'express';
 import { getAllSubCategories, createNewSubCategory, getSpecificSubCategory, updateSpecificSubCategory, deleteSpecificSubCategory } from './subCategory.service.js';
+import { Authentication, Authorization } from '../User/user.auth.js';
+
+
 
 
 
@@ -10,14 +13,14 @@ const router = Router();
 
 router.route("/")
     .get(getAllSubCategories)
-    .post(createNewSubCategory);
+    .post(Authentication, Authorization(["admin"]), createNewSubCategory);
 
 
 
 router.route("/:id")
     .get(getSpecificSubCategory)
-    .put(updateSpecificSubCategory)
-    .delete(deleteSpecificSubCategory);
+    .put(Authentication, Authorization(["admin"]), updateSpecificSubCategory)
+    .delete(Authentication, Authorization(["admin"]), deleteSpecificSubCategory);
 
 
 
