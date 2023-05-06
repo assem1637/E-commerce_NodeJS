@@ -18,7 +18,7 @@ const router = Router();
 
 
 router.route("/")
-    .get(getAllUsers)
+    .get(Authentication, Authorization(["admin"]), getAllUsers)
     .post(Authentication, Authorization(["admin"]), uploadSingleImage("profileImage"), createNewUser);
 
 

@@ -259,7 +259,7 @@ export const confirmResetCode = ErrorHandler(async (req, res, next) => {
 
                 if (match) {
 
-                    const token = jwt.sign({ email: user.email }, process.env.SECRET_KEY_RESET_PASSWORD);
+                    const token = jwt.sign({ email: user.email }, process.env.SECRET_KEY_CONFIRM_RESET_PASSWORD);
                     res.status(200).json({ message: "Success Confirm Reset Code", token });
 
                 } else {
@@ -294,7 +294,7 @@ export const Change_Password_After_Success_Confirm_Reset_Code = ErrorHandler(asy
 
     const token = req.params.token;
 
-    jwt.verify(token, process.env.SECRET_KEY_RESET_PASSWORD, async function (err, decoded) {
+    jwt.verify(token, process.env.SECRET_KEY_CONFIRM_RESET_PASSWORD, async function (err, decoded) {
 
         if (err) {
 
@@ -312,7 +312,7 @@ export const Change_Password_After_Success_Confirm_Reset_Code = ErrorHandler(asy
                 user.rePassword = hash;
                 user.changePasswordAt = Date.now();
 
-                user.resetCode = null;
+                user.resetCode = undefined;
 
                 await user.save();
 

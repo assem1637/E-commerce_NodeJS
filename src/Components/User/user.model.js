@@ -120,7 +120,6 @@ const userSchema = mongoose.Schema({
     changePasswordAt: {
 
         type: Date,
-        default: Date.now(),
 
     },
 
