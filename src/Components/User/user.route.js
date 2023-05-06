@@ -18,7 +18,7 @@ const router = Router();
 
 
 router.route("/")
-    .get(Authentication, Authorization(["admin"]), getAllUsers)
+    .get(getAllUsers)
     .post(Authentication, Authorization(["admin"]), uploadSingleImage("profileImage"), createNewUser);
 
 
@@ -32,7 +32,7 @@ router.route("/:id")
 
 router.post("/signup", signup);
 router.post("/signin", signin);
-router.patch("/confirmEmail/:token", confirmEmail);
+router.get("/confirmEmail/:token", confirmEmail);
 
 
 

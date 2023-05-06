@@ -2,7 +2,8 @@ import userModel from './user.model.js';
 import apiError from '../../Utils/apiError.js';
 import cloudinary from "cloudinary";
 import bcrypt from 'bcrypt';
-
+import jwt from 'jsonwebtoken';
+import sendMessageToConfirmEmail from '../../Utils/sendConfirmEmail.js';
 
 
 

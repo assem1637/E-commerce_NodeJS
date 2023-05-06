@@ -73,6 +73,7 @@ export const signup = ErrorHandler(async (req, res, next) => {
 
             };
 
+            req.body.role = "user";
 
             const newUser = userModel(req.body);
             await newUser.save();
@@ -106,11 +107,13 @@ export const signin = ErrorHandler(async (req, res, next) => {
 
     if (user) {
 
-        if (user.emailConfirm) {
 
-            const match = await bcrypt.compare(req.body.password, user.password);
+        const match = await bcrypt.compare(req.body.password, user.password);
 
-            if (match) {
+        if (match) {
+
+
+            if (user.emailConfirm) {
 
                 const token = jwt.sign({
 
@@ -123,6 +126,7 @@ export const signin = ErrorHandler(async (req, res, next) => {
                     role: user.role,
                     isActive: user.isActive,
                     profileImage: user.profileImage,
+                    changePasswordAt: user.changePasswordAt
 
                 }, process.env.SECRET_KEY_SIGNIN);
 
@@ -131,15 +135,17 @@ export const signin = ErrorHandler(async (req, res, next) => {
 
             } else {
 
-                res.status(400).json({ message: "Password Is Incorrect" });
+                res.status(400).json({ message: `Confirm Your Account, Then Try Again` });
 
             };
 
+
         } else {
 
-            res.status(400).json({ message: `Confirm Your Account, Then Try Again` });
+            res.status(400).json({ message: "Password Is Incorrect" });
 
         };
+
 
     } else {
 
@@ -349,16 +355,27 @@ export const Authentication = ErrorHandler(async (req, res, next) => {
 
             if (user) {
 
+                console.log(decoded.iat);
+                console.log(parseInt(Date.now(user.changePasswordAt) / 1000));
 
-                if (Date.now() > user.changePasswordAt) {
+                if (user.changePasswordAt) {
 
-                    req.user = user;
-                    next();
+                    if (decoded.iat > parseInt(Date.now(user.changePasswordAt) / 1000)) {
+
+                        req.user = user;
+                        next();
+
+                    } else {
+
+                        const passwordChangedAt = new Date(user.changePasswordAt);
+                        res.status(400).json({ message: `Your Password Changed At: ${passwordChangedAt}` });
+
+                    };
 
                 } else {
 
-                    const passwordChangedAt = new Date(user.changePasswordAt);
-                    res.status(400).json({ message: `Your Password Changed At: ${passwordChangedAt}` });
+                    req.user = user;
+                    next();
 
                 };
 
