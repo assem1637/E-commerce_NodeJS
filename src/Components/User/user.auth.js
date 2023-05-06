@@ -355,12 +355,12 @@ export const Authentication = ErrorHandler(async (req, res, next) => {
 
             if (user) {
 
-                console.log(decoded.iat);
-                console.log(parseInt(Date.now(user.changePasswordAt) / 1000));
+                const Change_Password_At = new Date(user.changePasswordAt);
+                const Final_Date = parseInt(Change_Password_At.getTime() / 1000);
 
                 if (user.changePasswordAt) {
 
-                    if (decoded.iat > parseInt(Date.now(user.changePasswordAt) / 1000)) {
+                    if (decoded.iat > Final_Date) {
 
                         req.user = user;
                         next();
