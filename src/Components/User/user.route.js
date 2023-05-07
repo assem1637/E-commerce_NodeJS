@@ -4,6 +4,7 @@ import {
 
     signup, signin, confirmEmail,
     forgetPassword, confirmResetCode, Change_Password_After_Success_Confirm_Reset_Code,
+    updateProfileImage,
     Authentication, Authorization
 
 } from './user.auth.js';
@@ -18,7 +19,7 @@ const router = Router();
 
 
 router.route("/")
-    .get(Authentication, Authorization(["admin"]), getAllUsers)
+    .get(getAllUsers)
     .post(Authentication, Authorization(["admin"]), uploadSingleImage("profileImage"), createNewUser);
 
 
@@ -29,8 +30,11 @@ router.route("/:id")
 
 
 
+router.patch("/changeProfileImage", Authentication, Authorization(["user"]), uploadSingleImage("profileImage"), updateProfileImage);
 
-router.post("/signup", signup);
+
+
+router.post("/signup", uploadSingleImage("profileImage"), signup);
 router.post("/signin", signin);
 router.get("/confirmEmail/:token", confirmEmail);
 

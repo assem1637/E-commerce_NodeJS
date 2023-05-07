@@ -335,6 +335,46 @@ export const Change_Password_After_Success_Confirm_Reset_Code = ErrorHandler(asy
 
 
 
+// Update Profile Image
+
+export const updateProfileImage = ErrorHandler(async (req, res, next) => {
+
+    if (!req.file) {
+
+        return next(new apiError(`This Is Endpoint Used To Update Profile Image Only`, 400));
+
+    } else {
+
+        const user = await userModel.findOne({ email: req.user.email });
+
+        if (user) {
+
+            if (req.file) {
+
+                const cloud = await cloudinary.uploader.upload(req.file.path);
+                user.profileImage = cloud.secure_url;
+
+            };
+
+
+            await user.save();
+
+            res.status(200).json({ message: "Success Change Profile Image", user });
+
+
+        } else {
+
+            res.status(400).json({ message: "Not Found User" });
+
+        };
+
+    };
+
+});
+
+
+
+
 
 // Authentication 
 
