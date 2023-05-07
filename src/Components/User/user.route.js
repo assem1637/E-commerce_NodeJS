@@ -4,12 +4,11 @@ import {
 
     signup, signin, confirmEmail,
     forgetPassword, confirmResetCode, Change_Password_After_Success_Confirm_Reset_Code,
-    updateProfileImage,
+    updateProfileImage, changePassword,
     Authentication, Authorization
 
 } from './user.auth.js';
 import { uploadSingleImage } from '../../Utils/uploadImage.js';
-
 
 
 
@@ -19,7 +18,7 @@ const router = Router();
 
 
 router.route("/")
-    .get(getAllUsers)
+    .get(Authentication, Authorization(["admin"]), getAllUsers)
     .post(Authentication, Authorization(["admin"]), uploadSingleImage("profileImage"), createNewUser);
 
 
@@ -30,7 +29,8 @@ router.route("/:id")
 
 
 
-router.patch("/changeProfileImage", Authentication, Authorization(["user"]), uploadSingleImage("profileImage"), updateProfileImage);
+router.patch("/changeProfileImage", Authentication, Authorization(["admin", "user"]), uploadSingleImage("profileImage"), updateProfileImage);
+router.patch("/changePassword", Authentication, Authorization(["admin", "user"]), changePassword);
 
 
 

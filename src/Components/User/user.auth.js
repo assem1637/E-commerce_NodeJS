@@ -335,15 +335,12 @@ export const Change_Password_After_Success_Confirm_Reset_Code = ErrorHandler(asy
 
 
 
-// Update Profile Image
+// Update Profile Image By User
 
 export const updateProfileImage = ErrorHandler(async (req, res, next) => {
 
-    if (!req.file) {
+    if (req.file) {
 
-        return next(new apiError(`This Is Endpoint Used To Update Profile Image Only`, 400));
-
-    } else {
 
         const user = await userModel.findOne({ email: req.user.email });
 
@@ -368,10 +365,61 @@ export const updateProfileImage = ErrorHandler(async (req, res, next) => {
 
         };
 
+
+    } else {
+
+        res.status(400).json({ message: `This Is Endpoint Used To Update Profile Image Only` });
+
     };
 
 });
 
+
+
+
+
+// Change Password By User
+
+export const changePassword = ErrorHandler(async (req, res, next) => {
+
+    if (req.body.password) {
+
+        const user = await userModel.findOne({ email: req.user.email });
+
+        if (user) {
+
+
+            if (req.body.password !== req.body.rePassword) {
+
+                return next(new apiError("Password And rePassword Are Doesn't Match", 400));
+
+            } else {
+
+                const hash = bcrypt.hashSync(req.body.password, 5);
+
+                user.password = hash;
+                user.rePassword = hash;
+                user.changePasswordAt = Date.now();
+
+                await user.save();
+
+                res.status(200).json({ message: "Success Change Password", user });
+
+            };
+
+        } else {
+
+            res.status(400).json({ message: "Not Found User" });
+
+        };
+
+    } else {
+
+        res.status(400).json({ message: `This Is Endpoint Used To Change Password Only` });
+
+    };
+
+});
 
 
 
