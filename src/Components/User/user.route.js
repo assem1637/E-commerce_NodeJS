@@ -18,13 +18,13 @@ const router = Router();
 
 
 router.route("/")
-    .get(Authentication, Authorization(["admin"]), getAllUsers)
+    .get(getAllUsers)
     .post(Authentication, Authorization(["admin"]), uploadSingleImage("profileImage"), createNewUser);
 
 
 router.route("/:id")
     .get(Authentication, Authorization(["admin"]), getSpecificUser)
-    .put(Authentication, Authorization(["admin", "user"]), uploadSingleImage("profileImage"), updateSpecificUser)
+    .put(Authentication, Authorization(["admin"]), uploadSingleImage("profileImage"), updateSpecificUser)
     .delete(Authentication, Authorization(["admin"]), deleteSpecificUser);
 
 

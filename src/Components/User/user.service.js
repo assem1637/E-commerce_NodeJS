@@ -20,6 +20,7 @@ cloudinary.config({
 
 
 
+
 // Function To Handle Errors
 
 const ErrorHandler = (fun) => {
@@ -155,6 +156,7 @@ export const updateSpecificUser = ErrorHandler(async (req, res, next) => {
                 return next(new apiError("Password And rePassword Are Doesn't Match", 400));
 
             };
+
 
             const hash = bcrypt.hashSync(req.body.password, 5);
 

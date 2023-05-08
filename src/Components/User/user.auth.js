@@ -306,17 +306,34 @@ export const Change_Password_After_Success_Confirm_Reset_Code = ErrorHandler(asy
 
             if (user) {
 
-                const hash = bcrypt.hashSync(req.body.newPassword, 5);
 
-                user.password = hash;
-                user.rePassword = hash;
-                user.changePasswordAt = Date.now();
+                const match = await bcrypt.compare(req.body.newPassword, user.password);
 
-                user.resetCode = undefined;
 
-                await user.save();
+                if (match) {
 
-                res.status(200).json({ message: "Success Change Password, Try Login Now" });
+
+                    return next(new apiError(`The New Password Must Be Different From The Current Password.`, 400));
+
+
+                } else {
+
+
+
+                    const hash = bcrypt.hashSync(req.body.newPassword, 5);
+
+                    user.password = hash;
+                    user.rePassword = hash;
+                    user.changePasswordAt = Date.now();
+
+                    user.resetCode = undefined;
+
+                    await user.save();
+
+                    res.status(200).json({ message: "Success Change Password, Try Login Now" });
+
+
+                };
 
             } else {
 
@@ -395,15 +412,30 @@ export const changePassword = ErrorHandler(async (req, res, next) => {
 
             } else {
 
-                const hash = bcrypt.hashSync(req.body.password, 5);
+                const match = await bcrypt.compare(req.body.password, user.password);
 
-                user.password = hash;
-                user.rePassword = hash;
-                user.changePasswordAt = Date.now();
 
-                await user.save();
+                if (match) {
 
-                res.status(200).json({ message: "Success Change Password", user });
+
+                    return next(new apiError(`The New Password Must Be Different From The Current Password.`, 400));
+
+
+                } else {
+
+
+                    const hash = bcrypt.hashSync(req.body.password, 5);
+
+                    user.password = hash;
+                    user.rePassword = hash;
+                    user.changePasswordAt = Date.now();
+
+                    await user.save();
+
+                    res.status(200).json({ message: "Success Change Password", user });
+
+
+                };
 
             };
 
