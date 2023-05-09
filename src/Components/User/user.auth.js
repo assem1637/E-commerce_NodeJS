@@ -219,7 +219,7 @@ export const forgetPassword = ErrorHandler(async (req, res, next) => {
 
         await user.save();
         sendResetCode(user.email, ResetCode);
-        const token = jwt.sign({ email: user.email }, process.env.SECRET_KEY_RESET_PASSWORD);
+        const token = jwt.sign({ email: user.email }, process.env.SECRET_KEY_RESET_PASSWORD, { expiresIn: 15 * 60 });
 
         res.status(200).json({ message: "Success Send Reset Code, Check Your Email", token });
 
@@ -247,7 +247,15 @@ export const confirmResetCode = ErrorHandler(async (req, res, next) => {
 
         if (err) {
 
-            res.status(400).json({ message: "Invalid Token", err });
+            if (err.name == "TokenExpiredError") {
+
+                res.status(400).json({ message: `Token Expired At ${err.expiredAt}`, err });
+
+            } else {
+
+                res.status(400).json({ message: "Invalid Token", err });
+
+            };
 
         } else {
 
@@ -259,7 +267,7 @@ export const confirmResetCode = ErrorHandler(async (req, res, next) => {
 
                 if (match) {
 
-                    const token = jwt.sign({ email: user.email }, process.env.SECRET_KEY_CONFIRM_RESET_PASSWORD);
+                    const token = jwt.sign({ email: user.email }, process.env.SECRET_KEY_CONFIRM_RESET_PASSWORD, { expiresIn: 15 * 60 });
                     res.status(200).json({ message: "Success Confirm Reset Code", token });
 
                 } else {
@@ -298,7 +306,15 @@ export const Change_Password_After_Success_Confirm_Reset_Code = ErrorHandler(asy
 
         if (err) {
 
-            res.status(400).json({ message: "Invalid Token", err });
+            if (err.name == "TokenExpiredError") {
+
+                res.status(400).json({ message: `Token Expired At ${err.expiredAt}`, err });
+
+            } else {
+
+                res.status(400).json({ message: "Invalid Token", err });
+
+            };
 
         } else {
 

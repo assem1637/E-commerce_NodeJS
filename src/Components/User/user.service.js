@@ -178,6 +178,14 @@ export const updateSpecificUser = ErrorHandler(async (req, res, next) => {
 
                 return next(new apiError(`This Is Email: ${searchUser.email} Is Already Used`, 400));
 
+            } else {
+
+                user.emailConfirm = false;
+                const token = jwt.sign({ email: req.body.email }, process.env.SECRET_KEY_SIGNUP);
+                sendMessageToConfirmEmail(req.body.email, token, req.protocol, req.headers.host);
+
+                await user.save();
+
             };
 
         };
