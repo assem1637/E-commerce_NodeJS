@@ -58,4 +58,3 @@ export default router;
 // Update Info For User
 // Current Password In Change Password For User
 // Reset Code Valid 10 Min
-// Reset Code Valid 10 Min
