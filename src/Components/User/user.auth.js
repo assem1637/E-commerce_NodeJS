@@ -415,43 +415,64 @@ export const updateProfileImage = ErrorHandler(async (req, res, next) => {
 
 export const changePassword = ErrorHandler(async (req, res, next) => {
 
-    if (req.body.password) {
+    if (req.body.newPassword) {
 
         const user = await userModel.findOne({ email: req.user.email });
 
         if (user) {
 
+            if (req.body.currentPassword) {
 
-            if (req.body.password !== req.body.rePassword) {
 
-                return next(new apiError("Password And rePassword Are Doesn't Match", 400));
-
-            } else {
-
-                const match = await bcrypt.compare(req.body.password, user.password);
+                const match = await bcrypt.compare(req.body.currentPassword, user.password);
 
 
                 if (match) {
 
 
-                    return next(new apiError(`The New Password Must Be Different From The Current Password.`, 400));
+                    if (req.body.newPassword !== req.body.reNewPassword) {
+
+                        return next(new apiError("Password And rePassword Are Doesn't Match", 400));
+
+                    } else {
+
+                        const matching = await bcrypt.compare(req.body.newPassword, user.password);
+
+
+                        if (matching) {
+
+
+                            return next(new apiError(`The New Password Must Be Different From The Current Password.`, 400));
+
+
+                        } else {
+
+                            const hash = bcrypt.hashSync(req.body.newPassword, 5);
+
+                            user.password = hash;
+                            user.rePassword = hash;
+                            user.changePasswordAt = Date.now();
+
+                            await user.save();
+
+                            res.status(200).json({ message: "Success Change Password", user });
+
+
+                        };
+
+                    };
 
 
                 } else {
 
-
-                    const hash = bcrypt.hashSync(req.body.password, 5);
-
-                    user.password = hash;
-                    user.rePassword = hash;
-                    user.changePasswordAt = Date.now();
-
-                    await user.save();
-
-                    res.status(200).json({ message: "Success Change Password", user });
-
+                    return next(new apiError(`Current Password Is Wrong`, 400));
 
                 };
+
+
+            } else {
+
+                return next(new apiError(`Current Password Is Required`, 400));
 
             };
 
@@ -485,6 +506,7 @@ export const Authentication = ErrorHandler(async (req, res, next) => {
             res.status(400).json({ message: "Invalid Token", err });
 
         } else {
+
 
             const user = await userModel.findOne({ email: decoded.email });
 
