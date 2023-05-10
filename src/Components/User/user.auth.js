@@ -367,6 +367,122 @@ export const Change_Password_After_Success_Confirm_Reset_Code = ErrorHandler(asy
 
 
 
+// Update Info
+
+export const UpdateInfo = ErrorHandler(async (req, res, next) => {
+
+    let user = await userModel.findOne({ email: req.user.email });
+
+    if (user) {
+
+
+        if (req.file) {
+
+            const cloud = await cloudinary.uploader.upload(req.file.path);
+            req.body.profileImage = cloud.secure_url;
+
+        };
+
+
+        if (req.body.email) {
+
+            let searchUser = await userModel.findOne({ email: req.body.email });
+
+            if (searchUser) {
+
+                return next(new apiError(`This Is Email: ${searchUser.email} Is Already Used`, 400));
+
+            } else {
+
+                req.body.emailConfirm = false;
+                const token = jwt.sign({ email: req.body.email }, process.env.SECRET_KEY_SIGNUP);
+                sendMessageToConfirmEmail(req.body.email, token, req.protocol, req.headers.host);
+
+            };
+
+        };
+
+
+        if (req.body.password) {
+
+            if (req.body.currentPassword) {
+
+                const match = await bcrypt.compare(req.body.currentPassword, user.password);
+
+                if (match) {
+
+
+                    if (req.body.password !== req.body.rePassword) {
+
+                        return next(new apiError("Password And rePassword Are Doesn't Match", 400));
+
+                    } else {
+
+                        const matching = await bcrypt.compare(req.body.password, user.password);
+
+
+                        if (matching) {
+
+
+                            return next(new apiError(`The New Password Must Be Different From The Current Password.`, 400));
+
+
+                        } else {
+
+                            const hash = bcrypt.hashSync(req.body.password, 5);
+
+                            req.body.password = hash;
+                            req.body.rePassword = hash;
+                            req.body.changePasswordAt = Date.now();
+
+
+                        };
+
+                    };
+
+
+                } else {
+
+                    return next(new apiError(`Current Password Is Wrong`, 400));
+
+                };
+
+
+            } else {
+
+                return next(new apiError(`Current Password Is Required`, 400));
+
+            };
+
+
+
+        };
+
+
+        if (req.body.role) {
+
+            if (req.user.role != "admin") {
+
+                return next(new apiError(`You Can't Change The Role`, 400));
+
+            };
+
+        };
+
+        user = await userModel.findOneAndUpdate({ email: req.user.email }, req.body, { new: true });
+        res.status(200).json({ message: "Success Updated", user });
+
+
+    } else {
+
+        res.status(400).json({ message: "Not Found User" });
+
+    };
+
+});
+
+
+
 
 // Update Profile Image By User
 
