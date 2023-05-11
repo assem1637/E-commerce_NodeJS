@@ -169,6 +169,16 @@ export const updateSpecificUser = ErrorHandler(async (req, res, next) => {
         };
 
 
+        if (req.body.phone) {
+
+            if (!req.body.phone.match(/^01(0|1|2|5)[0-9]{8}$/)) {
+
+                return next(new apiError(`It's Must Be A Egyption Phone Valid`, 400));
+
+            };
+
+        };
+
 
         if (req.body.email) {
 
