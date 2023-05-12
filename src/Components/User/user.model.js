@@ -117,6 +117,13 @@ const userSchema = mongoose.Schema({
     },
 
 
+    resetCodeAt: {
+
+        type: Date
+
+    },
+
+
     changePasswordAt: {
 
         type: Date,

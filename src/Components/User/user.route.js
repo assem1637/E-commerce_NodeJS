@@ -57,6 +57,4 @@ export default router;
 
 
 
-
-// Reset Code Valid 10 Min
 // Resend verification code (OTP)

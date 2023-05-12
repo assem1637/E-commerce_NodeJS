@@ -24,7 +24,7 @@ const sendResetCode = async (email, code) => {
         text: "Here's Your Password Reset Code!", // plain text body
         html: `
         
-            <p>To Authenticate, Please Use the Following One Time Password (OTP):</p>
+            <p>To Authenticate, Please Use the Following One Time Password (OTP) And The Code Available For 10 Minutes Only:</p>
             <br />
             <br />
             <h3>${code}</h3>

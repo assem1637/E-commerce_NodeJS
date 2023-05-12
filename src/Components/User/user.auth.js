@@ -216,10 +216,11 @@ export const forgetPassword = ErrorHandler(async (req, res, next) => {
         const hashResetCode = bcrypt.hashSync(ResetCode, 5);
 
         user.resetCode = hashResetCode;
+        user.resetCodeAt = Date.now();
 
         await user.save();
         sendResetCode(user.email, ResetCode);
-        const token = jwt.sign({ email: user.email }, process.env.SECRET_KEY_RESET_PASSWORD, { expiresIn: 15 * 60 });
+        const token = jwt.sign({ email: user.email }, process.env.SECRET_KEY_RESET_PASSWORD, { expiresIn: 20 * 60 });
 
         res.status(200).json({ message: "Success Send Reset Code, Check Your Email", token });
 
@@ -263,11 +264,20 @@ export const confirmResetCode = ErrorHandler(async (req, res, next) => {
 
             if (user) {
 
+
+                const resetCodeAt = new Date(user.resetCodeAt);
+
+                if (Date.now() > resetCodeAt.getTime() + (10 * 60 * 1000)) {
+
+                    return next(new apiError(`The Code Expired, Click Resend verification Code`, 400));
+
+                };
+
                 const match = await bcrypt.compare(req.body.resetCode, user.resetCode);
 
                 if (match) {
 
-                    const token = jwt.sign({ email: user.email }, process.env.SECRET_KEY_CONFIRM_RESET_PASSWORD, { expiresIn: 15 * 60 });
+                    const token = jwt.sign({ email: user.email }, process.env.SECRET_KEY_CONFIRM_RESET_PASSWORD, { expiresIn: 20 * 60 });
                     res.status(200).json({ message: "Success Confirm Reset Code", token });
 
                 } else {
@@ -343,6 +353,7 @@ export const Change_Password_After_Success_Confirm_Reset_Code = ErrorHandler(asy
                     user.changePasswordAt = Date.now();
 
                     user.resetCode = undefined;
+                    user.resetCodeAt = undefined;
 
                     await user.save();
 
