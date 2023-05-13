@@ -3,7 +3,7 @@ import { getAllUsers, createNewUser, getSpecificUser, updateSpecificUser, delete
 import {
 
     signup, signin, confirmEmail,
-    forgetPassword, confirmResetCode, Change_Password_After_Success_Confirm_Reset_Code,
+    forgetPassword, resendResetCode, confirmResetCode, Change_Password_After_Success_Confirm_Reset_Code,
     UpdateInfo, updateProfileImage, changePassword,
     Authentication, Authorization
 
@@ -22,15 +22,19 @@ router.post("/signin", signin);
 router.get("/confirmEmail/:token", confirmEmail);
 
 
+
+
 router.put("/updateInfo", Authentication, Authorization(["admin", "user"]), uploadSingleImage("profileImage"), UpdateInfo);
 router.patch("/changeProfileImage", Authentication, Authorization(["admin", "user"]), uploadSingleImage("profileImage"), updateProfileImage);
 router.patch("/changePassword", Authentication, Authorization(["admin", "user"]), changePassword);
 
 
+
+
 router.post("/forgetPassword", forgetPassword);
+router.post("/resendResetCode/:token", resendResetCode);
 router.post("/confirmResetCode/:token", confirmResetCode);
 router.put("/changePasswordAfterSuccessConfirmResetCode/:token", Change_Password_After_Success_Confirm_Reset_Code);
-
 
 
 
@@ -50,11 +54,7 @@ router.route("/:id")
 
 
 
+
+
+
 export default router;
-
-
-
-
-
-
-// Resend verification code (OTP)

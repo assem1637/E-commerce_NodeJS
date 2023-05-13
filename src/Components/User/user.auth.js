@@ -236,6 +236,59 @@ export const forgetPassword = ErrorHandler(async (req, res, next) => {
 
 
 
+// Resend Reset Code 
+
+export const resendResetCode = ErrorHandler(async (req, res, next) => {
+
+    const token = req.params.token;
+
+    jwt.verify(token, process.env.SECRET_KEY_RESET_PASSWORD, async function (err, decoded) {
+
+        if (err) {
+
+            if (err.name == "TokenExpiredError") {
+
+                res.status(400).json({ message: `Token Expired At ${err.expiredAt}`, err });
+
+            } else {
+
+                res.status(400).json({ message: "Invalid Token", err });
+
+            };
+
+        } else {
+
+            const user = await userModel.findOne({ email: decoded.email });
+
+            if (user) {
+
+
+                const ResetCode = parseInt(Math.random() * 1000000).toString();
+                const hashResetCode = bcrypt.hashSync(ResetCode, 5);
+
+                user.resetCode = hashResetCode;
+                user.resetCodeAt = Date.now();
+
+                await user.save();
+                sendResetCode(user.email, ResetCode);
+                const token = jwt.sign({ email: user.email }, process.env.SECRET_KEY_RESET_PASSWORD, { expiresIn: 20 * 60 });
+
+                res.status(200).json({ message: "Success reSend Reset Code, Check Your Email", token });
+
+
+            } else {
+
+                res.status(400).json({ message: "Not Found User" });
+
+            };
+
+        };
+
+    });
+
+});
+
+
 
 
 // Confirm Reset Code 
@@ -687,7 +740,6 @@ export const Authentication = ErrorHandler(async (req, res, next) => {
     });
 
 });
-
 
 
 
