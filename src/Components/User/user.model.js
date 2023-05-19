@@ -136,7 +136,7 @@ const userSchema = mongoose.Schema({
 
         {
             type: mongoose.SchemaTypes.ObjectId,
-            ref: "products"
+            ref: "products",
         },
 
     ],
