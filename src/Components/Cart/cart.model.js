@@ -32,18 +32,18 @@ const cartSchema = mongoose.Schema({
             },
 
 
-            quantity: {
-
-                type: Number,
-                default: 1,
-
-            },
-
-
             price: {
 
                 type: Number,
                 required: [true, "Price Of Product Is Required To Add To Cart"],
+
+            },
+
+
+            quantity: {
+
+                type: Number,
+                default: 1,
 
             },
 
