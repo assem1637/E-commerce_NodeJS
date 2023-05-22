@@ -278,3 +278,61 @@ export const deleteProductFromCart = ErrorHandler(async (req, res, next) => {
     };
 
 });
+
+
+
+
+
+
+
+
+// Update Quantity Of Specific Product
+
+export const updateQuantityOfProduct = ErrorHandler(async (req, res, next) => {
+
+    const user = await userModel.findOne({ _id: req.user._id });
+
+
+    if (user) {
+
+        const myCart = await cartModel.findOne({ userId: user._id });
+
+        if (myCart) {
+
+            let cartItems = myCart.cartItems;
+            const product = await productModel.findOne({ _id: req.body.productId });
+
+            if (!product) {
+
+                return next(new apiError(`This Is Product: ${req.body.productId} Is Not Found`, 400));
+
+            };
+
+
+            const isProduct = cartItems.find((item) => item.product == product.id);
+
+            if (!isProduct) {
+
+                return next(new apiError(`This Is Product: ${product._id} Not Found In My Cart`, 400));
+
+            };
+
+            isProduct.quantity = Number((req.body.quantity)) > 0 ? Number((req.body.quantity)) : 1;
+
+            await myCart.save();
+
+            res.status(200).json({ message: "Success Updated", data: myCart });
+
+        } else {
+
+            res.status(400).json({ message: "Your Cart Is Empty" });
+
+        };
+
+    } else {
+
+        res.status(400).json({ message: "Not Found User" });
+
+    };
+
+});
