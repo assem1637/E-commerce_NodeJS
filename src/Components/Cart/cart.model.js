@@ -70,6 +70,11 @@ const cartSchema = mongoose.Schema({
     },
 
 
+    couponName: {
+
+        type: String,
+
+    },
 
     totalPriceAfterDiscount: {
 

@@ -44,7 +44,14 @@ const couponSchema = mongoose.Schema({
         type: Number,
         required: [true, "Number Of Times Available Of Coupon Is Required"],
 
-    }
+    },
+
+
+    userUsed: [
+
+        { type: mongoose.SchemaTypes.ObjectId, ref: "user" },
+
+    ],
 
 
 }, { timestamps: true });

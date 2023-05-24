@@ -1,7 +1,8 @@
 import cartModel from './cart.model.js';
 import userModel from '../User/user.model.js';
-import productModel from '../Product/product.model.js';
 import apiError from '../../Utils/apiError.js';
+import couponModel from '../Coupon/coupon.model.js';
+import productModel from '../Product/product.model.js';
 
 
 
@@ -332,6 +333,137 @@ export const updateQuantityOfProduct = ErrorHandler(async (req, res, next) => {
     } else {
 
         res.status(400).json({ message: "Not Found User" });
+
+    };
+
+});
+
+
+
+
+
+
+
+
+// Apply Coupon In My Cart
+
+export const applyCoupon = ErrorHandler(async (req, res, next) => {
+
+    const user = await userModel.findOne({ _id: req.user._id });
+
+    if (user) {
+
+        const myCart = await cartModel.findOne({ userId: user._id });
+
+        if (myCart) {
+
+            const coupon = await couponModel.findOne({ code: req.body.coupon });
+
+            if (!coupon) {
+
+                return next(new apiError(`Oops! Coupon Code Invalid`, 400));
+
+            };
+
+
+            if (coupon.userUsed.includes(myCart.userId)) {
+
+                return next(new apiError(`This Coupon: ${coupon.code} Has Already Been Used For This Account`, 400));
+
+            };
+
+
+
+            if (myCart.discount > 0) {
+
+                return next(new apiError(`This Account Is Already Using An Activated Coupon`, 400));
+
+            };
+
+
+            myCart.discount = coupon.discount;
+            myCart.totalPriceAfterDiscount = Number(myCart.totalPrice) - Number(myCart.discount);
+            myCart.couponName = coupon.code;
+
+            await myCart.save();
+
+            coupon.numberOfAvailable--;
+            coupon.userUsed.push(myCart.userId);
+
+            await coupon.save();
+
+
+            res.status(200).json({ message: "Hurray! You Got A Discount!", data: myCart });
+
+
+        } else {
+
+            res.status(400).json({ message: "Your Cart Is Empty" });
+
+        };
+
+    } else {
+
+        res.status(400).json({ message: "User Not Found" });
+
+    };
+
+});
+
+
+
+
+
+
+
+
+// Delete Coupon From My Cart
+
+export const deleteCoupon = ErrorHandler(async (req, res, next) => {
+
+    const user = await userModel.findOne({ _id: req.user._id });
+
+    if (user) {
+
+        const myCart = await cartModel.findOne({ userId: user._id });
+
+        if (myCart) {
+
+            const coupon = await couponModel.findOne({ code: myCart.couponName });
+
+            if (!coupon) {
+
+                return next(new apiError(`Not Found Coupon`, 400));
+
+            };
+
+            myCart.discount = 0;
+            myCart.totalPriceAfterDiscount = Number(myCart.totalPrice) - Number(myCart.discount);
+            myCart.couponName = undefined;
+
+            await myCart.save();
+
+
+
+            const Index_Of_Cart = coupon.userUsed.indexOf(myCart.userId);
+            coupon.userUsed.splice(Index_Of_Cart, 1);
+            coupon.numberOfAvailable++;
+
+            await coupon.save();
+
+
+            res.status(200).json({ message: "Success Deleted Coupon", data: myCart });
+
+
+        } else {
+
+            res.status(400).json({ message: "Your Cart Is Empty" });
+
+        };
+
+    } else {
+
+        res.status(400).json({ message: "User Not Found" });
 
     };
 
