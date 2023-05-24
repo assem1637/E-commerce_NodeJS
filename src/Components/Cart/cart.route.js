@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAllCarts, getCartOfUser, addProductToCart, deleteProductFromCart, updateQuantityOfProduct, applyCoupon, deleteCoupon } from './cart.service.js';
+import { getAllCarts, deleteMyCart, getCartOfUser, addProductToCart, deleteProductFromCart, updateQuantityOfProduct, applyCoupon, deleteCoupon } from './cart.service.js';
 import { Authentication, Authorization } from '../User/user.auth.js';
 
 
@@ -12,7 +12,7 @@ const router = Router();
 
 
 router.get("/allCarts", getAllCarts);
-
+router.delete("/deleteMyCart", Authentication, Authorization(["user"]), deleteMyCart);
 
 
 router.route("/")

@@ -65,6 +65,56 @@ export const getAllCarts = ErrorHandler(async (req, res, next) => {
 
 
 
+// Delete All Products From My Cart (Delete My Cart)
+
+export const deleteMyCart = ErrorHandler(async (req, res, next) => {
+
+    const user = await userModel.findOne({ _id: req.user._id });
+
+    if (user) {
+
+        const myCart = await cartModel.findOne({ userId: user._id });
+
+        if (myCart) {
+
+
+            if (myCart.couponName) {
+
+                const coupon = await couponModel.findOne({ code: myCart.couponName });
+
+                if (coupon) {
+
+
+                    const Index_Of_Cart = coupon.userUsed.indexOf(myCart.userId);
+                    coupon.userUsed.splice(Index_Of_Cart, 1);
+                    coupon.numberOfAvailable++;
+
+                    await coupon.save();
+
+                };
+
+            };
+
+
+            await cartModel.findOneAndDelete({ userId: user._id });
+
+            res.status(200).json({ message: "Success Deleted", data: myCart });
+
+        } else {
+
+            res.status(400).json({ message: "Your Cart Is Empty" });
+
+        };
+
+    } else {
+
+        res.status(400).json({ message: "Not Found User" });
+
+    };
+
+});
+
+
 
 
 // Get Cart Of User
