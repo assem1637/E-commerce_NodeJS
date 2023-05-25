@@ -43,6 +43,7 @@ const couponSchema = mongoose.Schema({
 
         type: Number,
         required: [true, "Number Of Times Available Of Coupon Is Required"],
+        min: [0, "1 Is The Lowest Number Times Available Used Of Coupon"],
 
     },
 

@@ -52,6 +52,7 @@ const calcTotalPrice = (cartItems) => {
 
 
 
+
 // Get All Carts
 
 export const getAllCarts = ErrorHandler(async (req, res, next) => {
@@ -60,6 +61,7 @@ export const getAllCarts = ErrorHandler(async (req, res, next) => {
     res.status(200).json({ message: "Success", data: allCarts });
 
 });
+
 
 
 
@@ -113,6 +115,8 @@ export const deleteMyCart = ErrorHandler(async (req, res, next) => {
     };
 
 });
+
+
 
 
 
@@ -422,6 +426,12 @@ export const applyCoupon = ErrorHandler(async (req, res, next) => {
 
             };
 
+
+            if (coupon.numberOfAvailable <= 0) {
+
+                return next(new apiError(`The Number Of Times A Coupon: ${coupon.code} Can Be Used Has Expired`, 400));
+
+            };
 
 
             if (myCart.discount > 0) {
