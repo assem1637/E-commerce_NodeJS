@@ -16,7 +16,7 @@ router.delete("/deleteMyCart", Authentication, Authorization(["user"]), deleteMy
 
 
 router.route("/")
-    .get(Authentication, Authorization(["user"]), getCartOfUser)
+    .get(Authentication, Authorization(["user", "admin"]), getCartOfUser)
     .post(Authentication, Authorization(["user"]), addProductToCart)
     .delete(Authentication, Authorization(["user"]), deleteProductFromCart)
     .patch(Authentication, Authorization(["user"]), updateQuantityOfProduct);

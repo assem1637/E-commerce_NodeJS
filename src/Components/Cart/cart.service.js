@@ -138,7 +138,7 @@ export const getCartOfUser = ErrorHandler(async (req, res, next) => {
 
         } else {
 
-            res.status(400).json({ message: "Not Found Cart" });
+            res.status(400).json({ message: "Your Cart Is Empty" });
 
         };
 
@@ -181,6 +181,12 @@ export const addProductToCart = ErrorHandler(async (req, res, next) => {
 
             };
 
+
+            if (product.quantity <= 0) {
+
+                return next(new apiError(`The Quantity Of This Product Is Finished, Please Wait The Update From Admin`, 400));
+
+            };
 
             const isProduct = cartItems.find((item) => item.product == product.id);
 

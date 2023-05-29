@@ -24,6 +24,7 @@ import couponRouter from './src/Components/Coupon/coupon.route.js';
 import wishlistRouter from './src/Components/WishList/wishlist.route.js';
 import addressRouter from './src/Components/Address/address.route.js';
 import cartRouter from './src/Components/Cart/cart.route.js';
+import orderRouter from './src/Components/Order/order.route.js';
 
 
 
@@ -54,6 +55,7 @@ app.use("/api/v1/coupon", couponRouter);
 app.use("/api/v1/wishlist", wishlistRouter);
 app.use("/api/v1/address", addressRouter);
 app.use("/api/v1/cart", cartRouter);
+app.use("/api/v1/order", orderRouter);
 
 
 

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAllOrders, getOrdersOfUser, createOrderPayCash, createOrderPayVisa, updatePay, updateDelivered } from './order.service.js';
+import { getAllOrders, getOrdersOfUser, createOrderPayCash } from './order.service.js';
 import { Authentication, Authorization } from '../User/user.auth.js';
 
 
@@ -10,7 +10,7 @@ const router = Router();
 
 
 
-router.get("/allOrders", Authentication, Authorization(["admin"]), getAllOrders);
+router.get("/allOrders", getAllOrders);
 
 
 router.route("/")
@@ -18,11 +18,11 @@ router.route("/")
     .post(Authentication, Authorization(["user"]), createOrderPayCash);
 
 
-router.post("/payVisa", Authentication, Authorization(["user"]), createOrderPayVisa);
+// router.post("/payVisa", Authentication, Authorization(["user"]), createOrderPayVisa);
 
 
-router.put("/updatePay", Authentication, Authorization(["admin"]), updatePay);
-router.put("/updateDelivered", Authentication, Authorization(["admin"]), updateDelivered);
+// router.put("/updatePay", Authentication, Authorization(["admin"]), updatePay);
+// router.put("/updateDelivered", Authentication, Authorization(["admin"]), updateDelivered);
 
 
 
