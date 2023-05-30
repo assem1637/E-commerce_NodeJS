@@ -270,17 +270,11 @@ export const Create_Checkout_Session = ErrorHandler(async (req, res, next) => {
 
 const createOrderAfterPay = async (customer_email) => {
 
-    console.log(`After Pay ${customer_email}`);
-
     const user = await userModel.findOne({ email: customer_email });
-    console.log(`user =>  ${user}`);
     const myCart = await cartModel.findOne({ userId: user._id });
-    console.log(`myCart =>  ${myCart}`);
     const cartItems = myCart.cartItems;
     const addressesOfUser = await addressModel.find({ userId: user._id });
-    console.log(`addressesOfUser =>  ${addressesOfUser}`);
     const lastAddress = addressesOfUser[addressesOfUser.length - 1];
-    console.log(`lastAddress =>  ${lastAddress}`);
 
     const newOrder = new orderModel({
 
@@ -304,7 +298,6 @@ const createOrderAfterPay = async (customer_email) => {
 
     });
 
-    console.log(`newOrder =>  ${newOrder}`);
     await newOrder.save();
 
 
@@ -357,8 +350,6 @@ export const Handle_Webhook_Checkout = ErrorHandler(async (req, res, next) => {
 
     if (event.type === "checkout.session.completed") {
 
-        console.log("Create Order Now...");
-        console.log(event.data.object.customer_email);
         createOrderAfterPay(event.data.object.customer_email);
 
     };
