@@ -334,7 +334,7 @@ const createOrderAfterPay = async (customer_email) => {
 
 export const Handle_Webhook_Checkout = ErrorHandler(async (req, res, next) => {
 
-    const sig = request.headers['stripe-signature'];
+    const sig = req.headers['stripe-signature'];
 
     let event;
 
