@@ -10,7 +10,6 @@ import Stripe from "stripe";
 
 
 
-
 // Function To Handle Errors
 
 const ErrorHandler = (fun) => {
@@ -137,7 +136,7 @@ export const createOrderPayCash = ErrorHandler(async (req, res, next) => {
         await newOrder.save();
 
 
-        res.status(200).json({ message: "Success Order", data: newOrder });
+        res.status(200).json({ message: "Success Create Order", data: newOrder });
 
 
         // Update Products Info
@@ -183,11 +182,9 @@ export const createOrderPayCash = ErrorHandler(async (req, res, next) => {
 
 // Create Checkout Session
 
-
 const stripe = Stripe("sk_test_51NDVxiBNf6QU0ECaMzYorrMxWnfhQ5vRTGMb3WZiYcSM8IzAB8XMwOOtsikU17gXcMT0CYNHbZWR22jt2ADZuznh00czUPQxjw");
 
 export const Create_Checkout_Session = ErrorHandler(async (req, res, next) => {
-
 
     const user = await userModel.findOne({ _id: req.user._id });
 
@@ -204,35 +201,78 @@ export const Create_Checkout_Session = ErrorHandler(async (req, res, next) => {
         };
 
 
+        const product = await productModel.findOne({ _id: cartItems[0].product });
+
+        if (!product) {
+
+            return next(new apiError("Not Found Product", 400));
+
+        };
+
         const session = await stripe.checkout.sessions.create({
             line_items: [
                 {
                     price_data: {
                         currency: 'usd',
                         product_data: {
-                            name: 'Assem',
+                            name: product.name,
                         },
                         unit_amount: myCart.totalPriceAfterDiscount * 100,
                     },
                     quantity: 1,
                 },
             ],
-
             mode: 'payment',
+            metadata: {
+
+                cartId: myCart._id,
+
+            },
             customer_email: user.email,
-            payment_method_types: ['card'],
-            success_url: `${req.protocol}://${req.headers.host}/home`,
-            cancel_url: `${req.protocol}://${req.headers.host}/order`,
+            success_url: `${YOUR_DOMAIN}?success=true`,
+            cancel_url: `${YOUR_DOMAIN}?canceled=true`,
             expires_at: Math.floor(Date.now() / 1000) + (3600 * 2), // Configured to expire after 2 hours
         });
 
 
-        res.status(200).json({ message: "Success", data: session });
+        res.status(200).json({ message: "Success Create Checkout Session", data: session });
 
 
     } else {
 
         res.status(400).json({ message: "Not Found User" });
+
+    };
+
+});
+
+
+
+
+
+
+
+
+
+// Handle Webhook Checkout
+
+export const Handle_Webhook_Checkout = ErrorHandler(async (req, res, next) => {
+
+    const sig = request.headers['stripe-signature'];
+
+    let event;
+
+    try {
+        event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+    } catch (err) {
+        response.status(400).send(`Webhook Error: ${err.message}`);
+        return;
+    };
+
+
+    if (event.type == 'checkout.session.async_payment_succeeded') {
+
+        console.log("Create Order Now.....");
 
     };
 
