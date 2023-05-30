@@ -349,6 +349,7 @@ export const Handle_Webhook_Checkout = ErrorHandler(async (req, res, next) => {
     if (event.type === "checkout.session.completed") {
 
         createOrderAfterPay(req.data.object.customer_email);
+        res.status(200).json({ message: "Success Payment With Visa" });
 
     };
 
