@@ -276,7 +276,7 @@ const createOrderAfterPay = async (customer_email) => {
     const myCart = await cartModel.findOne({ userId: user._id });
     console.log(`myCart =>  ${myCart}`);
     const cartItems = myCart.cartItems;
-    const addressesOfUser = await addressModel.find({ userId: user._id });
+    const addressesOfUser = await addressModel.find({ userId: user.id });
     console.log(`addressesOfUser =>  ${addressesOfUser}`);
     const lastAddress = addressesOfUser[addressesOfUser.length - 1];
     console.log(`lastAddress =>  ${lastAddress}`);
@@ -290,6 +290,8 @@ const createOrderAfterPay = async (customer_email) => {
         shippingPrice: 0,
         finalTotalPrice: myCart.totalPriceAfterDiscount,
         paymentMethods: "visa",
+        isPayed: true,
+        payedAt: Date.now(),
         shippingAddress: {
 
             name: lastAddress.name,
@@ -301,9 +303,9 @@ const createOrderAfterPay = async (customer_email) => {
 
     });
 
+    console.log(`newOrder =>  ${newOrder}`);
     await newOrder.save();
 
-    console.log(`newOrder =>  ${newOrder}`);
 
     // Update Products Info
     cartItems.forEach(async (item) => {
