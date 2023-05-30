@@ -341,16 +341,17 @@ export const Handle_Webhook_Checkout = ErrorHandler(async (req, res, next) => {
     try {
         event = stripe.webhooks.constructEvent(req.body, sig, "whsec_3mWZU4fdeabsabXIWXEEDFGeE8pJ7wgI");
     } catch (err) {
-        res.status(400).send(`Webhook Error: ${err.message}`);
-        return;
+        return res.status(400).send(`Webhook Error: ${err.message}`);
     };
 
 
     if (event.type === "checkout.session.completed") {
 
         createOrderAfterPay(req.data.object.customer_email);
-        res.status(200).json({ message: "Success Payment With Visa" });
 
     };
+
+
+    res.status(200).json({ message: "Success Payment With Visa" });
 
 });
