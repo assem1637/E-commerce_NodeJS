@@ -229,8 +229,8 @@ export const Create_Checkout_Session = ErrorHandler(async (req, res, next) => {
 
             },
             customer_email: user.email,
-            success_url: `${YOUR_DOMAIN}?success=true`,
-            cancel_url: `${YOUR_DOMAIN}?canceled=true`,
+            success_url: `${req.protocol}://${req.headers.host}/home`,
+            cancel_url: `${req.protocol}://${req.headers.host}/order`,
             expires_at: Math.floor(Date.now() / 1000) + (3600 * 2), // Configured to expire after 2 hours
         });
 
