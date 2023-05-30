@@ -179,7 +179,6 @@ export const createOrderPayCash = ErrorHandler(async (req, res, next) => {
 
 
 
-
 // Create Checkout Session
 
 const stripe = Stripe("sk_test_51NDVxiBNf6QU0ECaMzYorrMxWnfhQ5vRTGMb3WZiYcSM8IzAB8XMwOOtsikU17gXcMT0CYNHbZWR22jt2ADZuznh00czUPQxjw");
@@ -252,6 +251,68 @@ export const Create_Checkout_Session = ErrorHandler(async (req, res, next) => {
 
 
 
+// Create Order And Pay With Payment Cash
+
+const createOrderAfterPay = async (customer_email) => {
+
+    const user = await userModel.findOne({ email: customer_email });
+    const myCart = await cartModel.findOne({ userId: user._id });
+    const cartItems = myCart.cartItems;
+    const addressesOfUser = await addressModel.find({ userId: user._id });
+    const lastAddress = addressesOfUser[addressesOfUser.length - 1];
+
+    const newOrder = orderModel({
+
+        userId: myCart.userId,
+        cartItems: myCart.cartItems,
+        totalPrice: myCart.totalPriceAfterDiscount,
+        taxPrice: 0,
+        shippingPrice: 0,
+        finalTotalPrice: myCart.totalPriceAfterDiscount,
+        paymentMethods: "visa",
+        shippingAddress: {
+
+            name: lastAddress.name,
+            address: lastAddress.address,
+            phone: lastAddress.phone,
+            location: lastAddress.location,
+
+        },
+
+    });
+
+    await newOrder.save();
+
+
+    // Update Products Info
+    cartItems.forEach(async (item) => {
+
+        const product = await productModel.findOne({ _id: item.product });
+
+
+        product.soldCount += 1;
+        product.quantity -= item.quantity;
+
+        if (product.quantity < 0) {
+
+            product.quantity = 0;
+
+        };
+
+
+        await product.save();
+
+    });
+
+
+    // Delete My Cart
+    await cartModel.findOneAndDelete({ userId: myCart.userId });
+
+};
+
+
+
+
 
 
 // Handle Webhook Checkout
@@ -272,7 +333,7 @@ export const Handle_Webhook_Checkout = ErrorHandler(async (req, res, next) => {
 
     if (event.type === "checkout.session.completed") {
 
-        console.log("Create Order Now....");
+        createOrderAfterPay(req.data.object.customer_email);
 
     };
 
