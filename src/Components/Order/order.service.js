@@ -263,7 +263,7 @@ export const Handle_Webhook_Checkout = ErrorHandler(async (req, res, next) => {
     let event;
 
     try {
-        event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+        event = stripe.webhooks.constructEvent(req.body, sig, "whsec_MU95qIJEs9tYNySBw3ZMm6osxl5usVaU");
     } catch (err) {
         res.status(400).send(`Webhook Error: ${err.message}`);
         return;
