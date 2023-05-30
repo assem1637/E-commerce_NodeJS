@@ -348,6 +348,7 @@ export const Handle_Webhook_Checkout = ErrorHandler(async (req, res, next) => {
     if (event.type === "checkout.session.completed") {
 
         console.log("Create Order Now...");
+        console.log(req.data.object.customer_email);
         createOrderAfterPay(req.data.object.customer_email);
 
     };
