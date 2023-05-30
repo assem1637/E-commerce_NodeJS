@@ -269,6 +269,8 @@ export const Create_Checkout_Session = ErrorHandler(async (req, res, next) => {
 
 const createOrderAfterPay = async (customer_email) => {
 
+    console.log(`After Pay ${customer_email}`);
+
     const user = await userModel.findOne({ email: customer_email });
     const myCart = await cartModel.findOne({ userId: user._id });
     const cartItems = myCart.cartItems;
