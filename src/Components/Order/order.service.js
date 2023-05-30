@@ -120,6 +120,10 @@ export const createOrderPayCash = ErrorHandler(async (req, res, next) => {
 
             }
 
+        } else {
+
+            return next(new apiError("Please Add New Address", 400));
+
         };
 
 
@@ -208,6 +212,15 @@ export const Create_Checkout_Session = ErrorHandler(async (req, res, next) => {
 
         };
 
+
+        const addressesOfUser = await addressModel.find({ userId: user._id });
+
+        if (!addressesOfUser) {
+
+            return next(new apiError("Please Add New Address", 400));
+
+        };
+
         const session = await stripe.checkout.sessions.create({
             line_items: [
                 {
@@ -244,6 +257,7 @@ export const Create_Checkout_Session = ErrorHandler(async (req, res, next) => {
     };
 
 });
+
 
 
 
@@ -309,6 +323,7 @@ const createOrderAfterPay = async (customer_email) => {
     await cartModel.findOneAndDelete({ userId: myCart.userId });
 
 };
+
 
 
 
