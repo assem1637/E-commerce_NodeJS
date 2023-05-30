@@ -195,7 +195,6 @@ export const Create_Checkout_Session = ErrorHandler(async (req, res, next) => {
     if (user) {
 
         const myCart = await cartModel.findOne({ userId: user._id });
-        const cartItems = myCart.cartItems;
 
         if (!myCart) {
 
@@ -203,6 +202,8 @@ export const Create_Checkout_Session = ErrorHandler(async (req, res, next) => {
 
         };
 
+
+        const cartItems = myCart.cartItems;
 
         const product = await productModel.findOne({ _id: cartItems[0].product });
 
