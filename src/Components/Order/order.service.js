@@ -4,7 +4,7 @@ import userModel from "../User/user.model.js";
 import addressModel from "../Address/address.model.js";
 import productModel from "../Product/product.model.js";
 import apiError from "../../Utils/apiError.js";
-
+import Stripe from "stripe";
 
 
 
@@ -163,6 +163,71 @@ export const createOrderPayCash = ErrorHandler(async (req, res, next) => {
 
         // Delete My Cart
         await cartModel.findOneAndDelete({ userId: myCart.userId });
+
+
+    } else {
+
+        res.status(400).json({ message: "Not Found User" });
+
+    };
+
+});
+
+
+
+
+
+
+
+
+
+// Create Checkout Session
+
+
+const stripe = Stripe("sk_test_51NDVxiBNf6QU0ECaMzYorrMxWnfhQ5vRTGMb3WZiYcSM8IzAB8XMwOOtsikU17gXcMT0CYNHbZWR22jt2ADZuznh00czUPQxjw");
+
+export const Create_Checkout_Session = ErrorHandler(async (req, res, next) => {
+
+
+    const user = await userModel.findOne({ _id: req.user._id });
+
+
+    if (user) {
+
+        const myCart = await cartModel.findOne({ userId: user._id });
+        const cartItems = myCart.cartItems;
+
+        if (!myCart) {
+
+            return next(new apiError("Your Cart Is Empty", 400));
+
+        };
+
+
+        const session = await stripe.checkout.sessions.create({
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'usd',
+                        product_data: {
+                            name: 'Assem',
+                        },
+                        unit_amount: myCart.totalPriceAfterDiscount * 100,
+                    },
+                    quantity: 1,
+                },
+            ],
+
+            mode: 'payment',
+            customer_email: user.email,
+            payment_method_types: ['card'],
+            success_url: `${req.protocol}://${req.headers.host}/home`,
+            cancel_url: `${req.protocol}://${req.headers.host}/order`,
+            expires_at: Math.floor(Date.now() / 1000) + (3600 * 2), // Configured to expire after 2 hours
+        });
+
+
+        res.status(200).json({ message: "Success", data: session });
 
 
     } else {

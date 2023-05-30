@@ -25,6 +25,7 @@ import wishlistRouter from './src/Components/WishList/wishlist.route.js';
 import addressRouter from './src/Components/Address/address.route.js';
 import cartRouter from './src/Components/Cart/cart.route.js';
 import orderRouter from './src/Components/Order/order.route.js';
+import Stripe from "stripe";
 
 
 
@@ -36,6 +37,43 @@ dbConnection();
 
 
 app.use(express.json());
+
+
+
+
+const stripe = Stripe("sk_test_51NDVxiBNf6QU0ECaMzYorrMxWnfhQ5vRTGMb3WZiYcSM8IzAB8XMwOOtsikU17gXcMT0CYNHbZWR22jt2ADZuznh00czUPQxjw");
+const endpointSecret = "whsec_43263a112bc589851bb228f08ecdb05b31c2c0c7b5a35d5516cc5c1e76f62049";
+
+app.post('/webhook', express.raw({ type: 'application/json' }), (request, response) => {
+    const sig = request.headers['stripe-signature'];
+
+    let event;
+
+    try {
+        event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+    } catch (err) {
+        response.status(400).send(`Webhook Error: ${err.message}`);
+        return;
+    }
+
+    // Handle the event
+    switch (event.type) {
+        case 'checkout.session.async_payment_succeeded':
+            const checkoutSessionAsyncPaymentSucceeded = event.data.object;
+            console.log("Yes Success Payment");
+
+            break;
+        // ... handle other event types
+        default:
+            console.log(`Unhandled event type ${event.type}`);
+    }
+
+    // Return a 200 response to acknowledge receipt of the event
+    response.send();
+});
+
+
+
 
 
 if (process.env.MODE_NOW === "Development") {

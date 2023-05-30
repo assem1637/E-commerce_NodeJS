@@ -237,6 +237,12 @@ export const addProductToCart = ErrorHandler(async (req, res, next) => {
             };
 
 
+            if (product.quantity <= 0) {
+
+                return next(new apiError(`The Quantity Of This Product Is Finished, Please Wait The Update From Admin`, 400));
+
+            };
+
 
             req.body.userId = user._id;
             req.body.cartItems = [{
