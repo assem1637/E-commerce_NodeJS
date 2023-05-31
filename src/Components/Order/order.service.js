@@ -358,3 +358,93 @@ export const Handle_Webhook_Checkout = ErrorHandler(async (req, res, next) => {
     res.status(200).json({ message: "Success Payment With Visa" });
 
 });
+
+
+
+
+
+
+
+// Update The Pay By Admin
+
+export const updatePay = ErrorHandler(async (req, res, next) => {
+
+    const user = await userModel.findOne({ _id: req.user._id });
+
+    if (user) {
+
+        const order = await orderModel.findOne({ _id: req.params.id });
+
+        if (order) {
+
+            if (order.isPayed === true) {
+
+                return next(new apiError(`This Is Order Is Already Payed`, 400));
+
+            };
+
+            order.isPayed = true;
+            order.payedAt = Date.now();
+
+            await order.save();
+
+            res.status(200).json({ message: "Success Updated The Pay", data: order });
+
+        } else {
+
+            res.status(400).json({ message: "Not Found Order" });
+
+        };
+
+    } else {
+
+        res.status(400).json({ message: "Not Found User" });
+
+    };
+
+});
+
+
+
+
+
+
+
+// Update The Delivered By Admin
+
+export const updateDelivered = ErrorHandler(async (req, res, next) => {
+
+    const user = await userModel.findOne({ _id: req.user._id });
+
+    if (user) {
+
+        const order = await orderModel.findOne({ _id: req.params.id });
+
+        if (order) {
+
+            if (order.isDelivered === true) {
+
+                return next(new apiError(`This Is Order Is Already Delivered`, 400));
+
+            };
+
+            order.isDelivered = true;
+            order.deliveredAt = Date.now();
+
+            await order.save();
+
+            res.status(200).json({ message: "Success Updated The Delivered", data: order });
+
+        } else {
+
+            res.status(400).json({ message: "Not Found Order" });
+
+        };
+
+    } else {
+
+        res.status(400).json({ message: "Not Found User" });
+
+    };
+
+});

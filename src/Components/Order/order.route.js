@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAllOrders, getOrdersOfUser, createOrderPayCash, Create_Checkout_Session } from './order.service.js';
+import { getAllOrders, getOrdersOfUser, createOrderPayCash, Create_Checkout_Session, updatePay, updateDelivered } from './order.service.js';
 import { Authentication, Authorization } from '../User/user.auth.js';
 
 
@@ -21,8 +21,8 @@ router.route("/")
 router.post("/create-checkout-session", Authentication, Authorization(["user"]), Create_Checkout_Session);
 
 
-// router.put("/updatePay", Authentication, Authorization(["admin"]), updatePay);
-// router.put("/updateDelivered", Authentication, Authorization(["admin"]), updateDelivered);
+router.put("/updatePay/:id", Authentication, Authorization(["admin"]), updatePay);
+router.put("/updateDelivered/:id", Authentication, Authorization(["admin"]), updateDelivered);
 
 
 
