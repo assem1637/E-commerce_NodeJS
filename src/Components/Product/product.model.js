@@ -129,7 +129,17 @@ const productSchema = mongoose.Schema({
     },
 
 
-}, { timestamps: true });
+}, { timestamps: true, toJSON: { virtuals: true } });
+
+
+
+productSchema.virtual("reviews", {
+
+    ref: "review",
+    localField: "_id",
+    foreignField: "productId",
+
+});
 
 
 

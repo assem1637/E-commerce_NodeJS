@@ -47,7 +47,7 @@ const ErrorHandler = (fun) => {
 
 export const getAllProducts = ErrorHandler(async (req, res, next) => {
 
-    const mongooseQuery = productModel.find({}).populate("category subCategory brand");
+    const mongooseQuery = productModel.find({}).populate("category subCategory brand reviews");
 
     const apiFeatures = new ApiFeatures(mongooseQuery, req.query).Pagination().Filter().Search().Select().Sort();
 
