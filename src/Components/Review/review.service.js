@@ -148,3 +148,113 @@ export const createReview = ErrorHandler(async (req, res, next) => {
     };
 
 });
+
+
+
+
+
+
+
+
+
+// Get Specific Review For User
+
+export const getSpecificReview = ErrorHandler(async (req, res, next) => {
+
+    const user = await userModel.findOne({ _id: req.user._id });
+
+    if (user) {
+
+        const specificReview = await reviewModel.findOne({ _id: req.params.id, userId: user._id });
+
+        if (!specificReview) {
+
+            return next(new apiError(`Not Found Review`, 400));
+
+        };
+
+        res.status(200).json({ message: "Success", data: specificReview });
+
+    } else {
+
+        res.status(400).json({ message: "Not Found User" });
+
+    };
+
+});
+
+
+
+
+
+
+
+
+
+// Update Specific Review By User
+
+export const updateSpecificReview = ErrorHandler(async (req, res, next) => {
+
+    const user = await userModel.findOne({ _id: req.user._id });
+
+
+    if (user) {
+
+        let specificReview = await reviewModel.findOne({ _id: req.params.id, userId: user._id });
+
+        if (!specificReview) {
+
+            return next(new apiError(`Not Found Review`, 400));
+
+        };
+
+
+        specificReview = await reviewModel.findOneAndUpdate({ _id: specificReview._id }, req.body, { new: true });
+
+
+        res.status(200).json({ message: "Success Updated", data: specificReview });
+
+
+    } else {
+
+        res.status(400).json({ message: "Not Found User" });
+
+    };
+
+});
+
+
+
+
+
+
+
+
+
+// Delete Specific Review By User
+
+export const deleteSpecificReview = ErrorHandler(async (req, res, next) => {
+
+    const user = await userModel.findOne({ _id: req.user._id });
+
+
+    if (user) {
+
+        const specificReview = await reviewModel.findOneAndDelete({ _id: req.params.id, userId: user._id });
+
+        if (!specificReview) {
+
+            return next(new apiError(`Not Found Review`, 400));
+
+        };
+
+        res.status(200).json({ message: "Success Deleted", data: specificReview });
+
+
+    } else {
+
+        res.status(400).json({ message: "Not Found User" });
+
+    };
+
+});
