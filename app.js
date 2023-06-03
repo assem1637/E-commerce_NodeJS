@@ -26,6 +26,7 @@ import addressRouter from './src/Components/Address/address.route.js';
 import cartRouter from './src/Components/Cart/cart.route.js';
 import orderRouter from './src/Components/Order/order.route.js';
 import { Handle_Webhook_Checkout } from './src/Components/Order/order.service.js';
+import reviewRouter from './src/Components/Review/review.route.js';
 
 
 
@@ -61,6 +62,7 @@ app.use("/api/v1/wishlist", wishlistRouter);
 app.use("/api/v1/address", addressRouter);
 app.use("/api/v1/cart", cartRouter);
 app.use("/api/v1/order", orderRouter);
+app.use("/api/v1/review", reviewRouter);
 
 
 

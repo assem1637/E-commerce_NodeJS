@@ -10,7 +10,7 @@ const router = Router();
 
 
 
-router.get("/allReviews", Authentication, Authorization(["admin"]), getAllReviews);
+router.get("/allReviews", getAllReviews);
 
 
 router.route("/")

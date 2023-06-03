@@ -10,6 +10,7 @@ import apiError from "../../Utils/apiError.js";
 
 
 
+
 // Function To Handle Errors
 
 const ErrorHandler = (fun) => {
@@ -63,7 +64,7 @@ export const getAllReviewsOfUser = ErrorHandler(async (req, res, next) => {
 
         const reviews_for_specific_user = await reviewModel.find({ userId: user._id });
 
-        if (reviews_for_specific_user > 0) {
+        if (reviews_for_specific_user.length > 0) {
 
 
             res.status(200).json({ message: "Success", data: reviews_for_specific_user });
@@ -116,8 +117,17 @@ export const createReview = ErrorHandler(async (req, res, next) => {
 
             };
 
+            let product_will_review;
 
-            const product_will_review = cartItems.find((item) => item.product == product._id);
+            cartItems.forEach((item) => {
+
+                if (item.product == product.id) {
+
+                    product_will_review = product;
+
+                };
+
+            });
 
             if (!product_will_review) {
 
@@ -157,7 +167,7 @@ export const createReview = ErrorHandler(async (req, res, next) => {
 
 
 
-// Get Specific Review For User
+// Get Specific Review For User By ID
 
 export const getSpecificReview = ErrorHandler(async (req, res, next) => {
 
@@ -191,7 +201,7 @@ export const getSpecificReview = ErrorHandler(async (req, res, next) => {
 
 
 
-// Update Specific Review By User
+// Update Specific Review By User By ID
 
 export const updateSpecificReview = ErrorHandler(async (req, res, next) => {
 
@@ -231,7 +241,7 @@ export const updateSpecificReview = ErrorHandler(async (req, res, next) => {
 
 
 
-// Delete Specific Review By User
+// Delete Specific Review By User By ID
 
 export const deleteSpecificReview = ErrorHandler(async (req, res, next) => {
 
